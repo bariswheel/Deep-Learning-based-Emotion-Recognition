@@ -1,0 +1,11 @@
+pandas
+numpy
+scipy
+natsort
+imutils
+scikit-learn
+tensorflow
+matplotlib
+opencv-python
+scikit-plot
+seaborn
