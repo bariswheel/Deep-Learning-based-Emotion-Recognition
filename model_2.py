@@ -1,36 +1,17 @@
 # import the necessary packages
-from keras.models import Sequential
-from keras.layers.convolutional import Conv2D
-from keras.layers.convolutional import MaxPooling2D
-from keras.layers.core import Activation
-from keras.layers.core import Flatten
-from keras.layers.core import Dense
-from keras.layers import Input, Conv1D, BatchNormalization, MaxPooling1D, LSTM, Dense, Activation, Layer
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Activation, Flatten, Dense, Input, Conv1D, BatchNormalization, MaxPooling1D, LSTM, Reshape, RepeatVector, TimeDistributed, Dropout
+from tensorflow.keras import backend as K
+
 import argparse
 from math import sqrt
-from numpy import split
-from numpy import array
+from numpy import split, array
 from pandas import read_csv
 from sklearn.metrics import mean_squared_error
-from matplotlib import pyplot
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import Flatten
-from keras import backend as K
-
-from keras.layers import LSTM
-from keras.layers import Reshape
-from keras.layers import RepeatVector
-from keras.layers import TimeDistributed
-from keras.layers.convolutional import Conv1D
-from keras.layers.convolutional import MaxPooling1D
-from keras.layers.core import Dropout
-import tensorflow as tf
+from matplotlib import pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 
 import pandas as pd
-import matplotlib.pyplot as plt
-import tensorflow as tf
 import numpy as np
 import math
 import datetime

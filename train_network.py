@@ -5,55 +5,34 @@ import scipy.stats as scs
 import re
 import natsort
 from imutils import paths
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report
-from numpy import savetxt
-from numpy import genfromtxt
+from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, f1_score, precision_score, recall_score, balanced_accuracy_score, precision_recall_curve, matthews_corrcoef, roc_curve, jaccard_score, hamming_loss, fbeta_score, precision_recall_fscore_support, zero_one_loss, average_precision_score, cohen_kappa_score, roc_auc_score, mean_squared_error, auc
+from numpy import savetxt, genfromtxt
 import csv
+import matplotlib.pyplot as plt
+import argparse
+import random
+import cv2
+import os
+import scikitplot as skplt
+import seaborn as sns
+import time
+from functools import reduce
+import math as m
+import scipy.io
+from scipy.interpolate import griddata
+from sklearn.preprocessing import scale, MinMaxScaler
+from sklearn.model_selection import train_test_split
 
-from keras.utils import np_utils
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.utils import to_categorical, plot_model
+from tensorflow.keras.preprocessing.image import img_to_array
+
+from model_1 import networkArchFonc
+
+np.random.seed(1234)
 
 pd.options.display.max_columns = None
 pd.options.display.precision = 4
-# import the necessary packages
-from keras.optimizers import Adam
-
-from keras.utils.vis_utils import plot_model
-from sklearn.model_selection import train_test_split
-from sklearn import preprocessing
-from keras.preprocessing.image import img_to_array
-from keras.utils import to_categorical
-from model_1 import networkArchFonc
-from imutils import paths
-import matplotlib.pyplot as plt
-
-import argparse
-import random
-# from pandas_ml import ConfusionMatrix
-import cv2
-import os
-import pandas as pd
-import scikitplot as skplt
-# import imutils
-import seaborn as sns
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report, \
-    confusion_matrix, balanced_accuracy_score, precision_recall_curve, matthews_corrcoef, roc_curve, jaccard_score, \
-    hamming_loss, fbeta_score, precision_recall_fscore_support, zero_one_loss, average_precision_score
-from sklearn.metrics import cohen_kappa_score, roc_auc_score, mean_squared_error, auc
-from inspect import signature
-from sklearn.model_selection import train_test_split
-import time
-
-np.random.seed(1234)
-from functools import reduce
-import math as m
-
-import scipy.io
-# import theano
-# import theano.tensor as T
-
-from scipy.interpolate import griddata
-from sklearn.preprocessing import scale
 
 sira = '52'
 
