@@ -13,9 +13,9 @@ such as video classification or time-series analysis of image data.
 '''
 
 # import the necessary packages
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Activation, Flatten, Dense, Input, Conv1D, BatchNormalization, MaxPooling1D, LSTM, Reshape, RepeatVector, TimeDistributed, Dropout
-from tensorflow.keras import backend as K
+from tensorflow.keras.models import Sequential # type: ignore
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Activation, Flatten, Dense, Input, Conv1D, BatchNormalization, MaxPooling1D, LSTM, Reshape, RepeatVector, TimeDistributed, Dropout # type: ignore
+from tensorflow.keras import backend as K # type: ignore
 
 import argparse
 from math import sqrt

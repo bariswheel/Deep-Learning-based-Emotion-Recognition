@@ -23,9 +23,9 @@ from scipy.interpolate import griddata
 from sklearn.preprocessing import scale, MinMaxScaler
 from sklearn.model_selection import train_test_split
 
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.utils import to_categorical, plot_model
-from tensorflow.keras.preprocessing.image import img_to_array
+from tensorflow.keras.optimizers import Adam # type: ignore
+from tensorflow.keras.utils import to_categorical, plot_model # type: ignore
+from tensorflow.keras.preprocessing.image import img_to_array # type: ignore
 
 from model_1 import networkArchFonc
 import glob  # Ensure glob is imported
