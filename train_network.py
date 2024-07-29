@@ -95,16 +95,15 @@ def fft(snippet):
 
     return frq, Y
 
-def gama_alpha_beta_averages(f, Y):
-    gama_range = (30, 45)
+def gamma_alpha_beta_averages(f, Y):
+    gamma_range = (30, 45)
     alpha_range = (8, 13)
     beta_range = (14, 30)
-    # gama1 = Y[(f > gama_range[0]) & (f <= gama_range[1])].sum()
-    gama = Y[(f > gama_range[0]) & (f <= gama_range[1])].mean()
+    gamma = Y[(f > gamma_range[0]) & (f <= gamma_range[1])].mean()
     alpha = Y[(f > alpha_range[0]) & (f <= alpha_range[1])].mean()
     beta = Y[(f > beta_range[0]) & (f <= beta_range[1])].mean()
 
-    return gama, alpha, beta
+    return gamma, alpha, beta
 
 
 def cart2sph(x, y, z):
@@ -141,9 +140,9 @@ def aep_frame_maker(df, frame_duration):
         for channel in df.columns:
             snippet = np.array(df.loc[steps[i][0]:steps[i][1], int(channel)])
             f, Y = fft(snippet)  # real part fft bul
-            gama, alpha, beta = gama_alpha_beta_averages(f, Y)
+            gamma, alpha, beta = gamma_alpha_beta_averages(f, Y)
           
-            frame.append([gama, alpha, beta])
+            frame.append([gamma, alpha, beta])
         
 
         frames.append(frame)
