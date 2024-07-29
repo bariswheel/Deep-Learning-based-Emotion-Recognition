@@ -477,7 +477,8 @@ y_test = to_categorical(y_test, num_classes)
 
 
 model = networkArchFonc.build(width=resim_boyut, height=resim_boyut, depth=3, classes=2)
-opt = Adam(lr=0.001, decay=1e-6)
+# opt = Adam(lr=0.001, decay=1e-6)
+opt = Adam(learning_rate=0.001)
 
 # opt = keras.optimizers.rmsprop(lr=0.001, decay=1e-6)
 
@@ -490,6 +491,7 @@ x_test = x_test.astype('float32')
 x_train /= 255
 x_test /= 255
 
+# Baris: Train the Model
 H = model.fit(x_train, y_train,
               batch_size=batch_size,
               epochs=epochs,
