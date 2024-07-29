@@ -1,3 +1,17 @@
+'''
+model_2.py is a Python module that defines a more complex neural network architecture
+compare to model_1.py that combines both Convolutional Neural Networks (CNN) and 
+Long Short-Term Memory (LSTM) layers using TensorFlow and Keras.
+
+Purpose:
+The purpose of model_2.py is to provide a hybrid model that leverages the strengths
+of both CNNs and LSTMs. The CNN layers are used for feature extraction from images,
+while the LSTM layers are used for processing temporal sequences of data. This model
+is suitable for tasks that involve both spatial and temporal dependencies,
+such as video classification or time-series analysis of image data.
+
+'''
+
 # import the necessary packages
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Activation, Flatten, Dense, Input, Conv1D, BatchNormalization, MaxPooling1D, LSTM, Reshape, RepeatVector, TimeDistributed, Dropout
