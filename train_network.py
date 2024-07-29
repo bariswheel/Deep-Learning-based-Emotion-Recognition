@@ -53,7 +53,7 @@ sira = str(next_model_number)
 # Update the save paths
 model_save = f'{model_directory}/m{sira}.keras'
 test_sonuc = f'{results_directory}/sonuc{sira}'
-test_sonuc2 = f'{results_directory}/confision{sira}'
+test_sonuc2 = f'{results_directory}/confusion{sira}'
 PR = f'{results_directory}/PR-Grafik{sira}'
 roc = f'{results_directory}/roc{sira}'
 
