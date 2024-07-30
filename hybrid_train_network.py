@@ -336,16 +336,6 @@ print(x_test.shape[0], 'test samples')
 
 input_shape = (img_rows, img_cols, 3)
 
-# convert class vectors to binary class matrices
-y_train = to_categorical(y_train, num_classes)
-y_test = to_categorical(y_test, num_classes)
-
-# Building the model below
-model = networkArchFonc.build(width=resim_boyut, height=resim_boyut, depth=3, classes=2)
-
-# Compiling the model with the correct loss function
-opt = Adam(learning_rate=0.001)
-
 '''
 The code code below will ensure the correct loss function is used based on the model selected.
 For model 2 (which outputs a single unit with sigmoid activation), it uses binary_crossentropy.
@@ -369,17 +359,26 @@ In summary, the choice of loss function aligns with the type of classification t
 is designed to solve: multi-class for model 1 and binary for model 2.
 
 '''
-if args.model == 2:
-    model.compile(optimizer=opt, loss="binary_crossentropy", metrics=["accuracy"])
-else:
+# Building the model
+model = networkArchFonc.build(width=resim_boyut, height=resim_boyut, depth=3, classes=2)
+
+# Compiling the model with the correct loss function
+opt = Adam(learning_rate=0.001)
+if args.model == 1:
+    y_train = to_categorical(y_train, num_classes)
+    y_test = to_categorical(y_test, num_classes)
     model.compile(optimizer=opt, loss="categorical_crossentropy", metrics=["accuracy"])
+elif args.model == 2:
+    y_train = y_train[:, np.newaxis]
+    y_test = y_test[:, np.newaxis]
+    model.compile(optimizer=opt, loss="binary_crossentropy", metrics=["accuracy"])
 
 x_train = x_train.astype('float32')
 x_test = x_test.astype('float32')
 x_train /= 255
 x_test /= 255
 
-# Train the Model
+# Training the model
 H = model.fit(x_train, y_train,
               batch_size=batch_size,
               epochs=epochs,

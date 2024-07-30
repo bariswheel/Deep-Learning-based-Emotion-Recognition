@@ -11,18 +11,18 @@ from numpy import savetxt
 from numpy import genfromtxt
 import csv
 
-from keras.utils import np_utils
+from keras.utils import np_utils #type:ignore
 
 pd.options.display.max_columns = None
 pd.options.display.precision = 4
 # import the necessary packages
-from keras.optimizers import Adam
+from keras.optimizers import Adam #type:ignore
 
-from keras.utils.vis_utils import plot_model
+from keras.utils.vis_utils import plot_model #type:ignore
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
-from keras.preprocessing.image import img_to_array
-from keras.utils import to_categorical
+from keras.preprocessing.image import img_to_array #type:ignore
+from keras.utils import to_categorical #type:ignore
 from model_1 import networkArchFonc
 from imutils import paths
 import matplotlib.pyplot as plt
