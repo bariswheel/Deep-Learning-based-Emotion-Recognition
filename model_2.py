@@ -1,6 +1,6 @@
 '''
-model_2.py is a Python module that defines a more complex neural network architecture
-compare to model_1.py that combines both Convolutional Neural Networks (CNN) and 
+model_2.py defines a more complex neural network architecture
+compared to model_1.py that combines both Convolutional Neural Networks (CNN) and 
 Long Short-Term Memory (LSTM) layers using TensorFlow and Keras.
 
 Purpose:
@@ -10,26 +10,24 @@ while the LSTM layers are used for processing temporal sequences of data. This m
 is suitable for tasks that involve both spatial and temporal dependencies,
 such as video classification or time-series analysis of image data.
 
+Here’s how the binary classification fits in:
+
+Valence: Classified into positive and negative.
+Arousal: Classified into high and low.
+Dominance: Classified into high and low.
+Liking: Classified into like and unlike.
+
+valence (how pleasant an emotion is) 
+arousal (how activated or energized one feels). 
+High dominance is associated with feelings of empowerment and control
+Low dominance is associated with feelings of submission and powerlessness. 
+
 '''
 
 # import the necessary packages
-from tensorflow.keras.models import Sequential # type: ignore
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Activation, Flatten, Dense, Input, Conv1D, BatchNormalization, MaxPooling1D, LSTM, Reshape, RepeatVector, TimeDistributed, Dropout # type: ignore
-from tensorflow.keras import backend as K # type: ignore
-
-import argparse
-from math import sqrt
-from numpy import split, array
-from pandas import read_csv
-from sklearn.metrics import mean_squared_error
-from matplotlib import pyplot as plt
-from sklearn.preprocessing import MinMaxScaler
-
-import pandas as pd
-import numpy as np
-import math
-import datetime
-
+from tensorflow.keras.models import Sequential # type:ignore
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Activation, Flatten, Dense, Reshape, LSTM # type:ignore
+from tensorflow.keras import backend as K # type:ignore
 
 class networkArchFonc:
     @staticmethod
@@ -42,24 +40,18 @@ class networkArchFonc:
         if K.image_data_format() == "channels_first":
             inputShape = (depth, height, width)
 
-        model.add(Conv2D(filters=32,
-                         kernel_size=5,
-                         padding="same",
-                         activation="relu",
-                         input_shape=inputShape))
+        model.add(Conv2D(filters=32, kernel_size=5, padding="same", activation="relu", input_shape=inputShape))
         model.add(MaxPooling2D(pool_size=2, strides=2, padding="same"))
         model.add(Conv2D(filters=64, kernel_size=5, padding="same", activation="relu"))
         model.add(MaxPooling2D(pool_size=2, strides=2, padding="same"))
         model.add(Conv2D(filters=128, kernel_size=5, padding="same", activation="relu"))
         model.add(MaxPooling2D(pool_size=2, strides=2, padding="same"))
-        model.summary()
-        model.add(Reshape((128, 3), name='predictions'))
-        model.add(LSTM(128, return_sequences=True))
-        model.add(LSTM(128, return_sequences=True))
         model.add(Flatten())
+        model.add(Reshape((128, 4)))
+        model.add(LSTM(128, return_sequences=True))
+        model.add(LSTM(128, return_sequences=False))  # Only the last LSTM layer should have return_sequences=False
         model.add(Dense(100, activation="relu"))
-
-        model.add(Dense(1, activation='sigmoid'))
+        model.add(Dense(1, activation='sigmoid'))  # Change this line to have one unit with 'sigmoid' activation
 
         model.summary()
 

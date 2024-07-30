@@ -340,19 +340,46 @@ input_shape = (img_rows, img_cols, 3)
 y_train = to_categorical(y_train, num_classes)
 y_test = to_categorical(y_test, num_classes)
 
-
+# Building the model below
 model = networkArchFonc.build(width=resim_boyut, height=resim_boyut, depth=3, classes=2)
+
+# Compiling the model with the correct loss function
 opt = Adam(learning_rate=0.001)
 
-model.compile(optimizer=opt, loss="binary_crossentropy",
-              metrics=["accuracy"])
+'''
+The code code below will ensure the correct loss function is used based on the model selected.
+For model 2 (which outputs a single unit with sigmoid activation), it uses binary_crossentropy.
+For model 1 (which outputs two units with softmax activation), it uses categorical_crossentropy.
+
+Model 1:
+
+Loss Function: categorical_crossentropy
+Output Layer: Uses softmax activation.
+Expected Output: Categorical (one-hot encoded) labels.
+Reason: This model is used for multi-class classification where each sample can belong to one of several categories.
+
+Model 2:
+
+Loss Function: binary_crossentropy
+Output Layer: Uses sigmoid activation.
+Expected Output: Binary labels (0 or 1).
+Reason: This model is designed for binary classification where each sample is classified into one of two categories.
+
+In summary, the choice of loss function aligns with the type of classification task each model
+is designed to solve: multi-class for model 1 and binary for model 2.
+
+'''
+if args.model == 2:
+    model.compile(optimizer=opt, loss="binary_crossentropy", metrics=["accuracy"])
+else:
+    model.compile(optimizer=opt, loss="categorical_crossentropy", metrics=["accuracy"])
 
 x_train = x_train.astype('float32')
 x_test = x_test.astype('float32')
 x_train /= 255
 x_test /= 255
 
-# Baris: Train the Model
+# Train the Model
 H = model.fit(x_train, y_train,
               batch_size=batch_size,
               epochs=epochs,
