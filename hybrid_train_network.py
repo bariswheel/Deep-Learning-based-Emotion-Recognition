@@ -378,14 +378,19 @@ x_test = x_test.astype('float32')
 x_train /= 255
 x_test /= 255
 
-# Training the model
-H = model.fit(x_train, y_train,
-              batch_size=batch_size,
-              epochs=epochs,
-              validation_data=(x_test, y_test),
-              shuffle=True, verbose=2)
+# Save the model if interrupted
+try:
+    H = model.fit(x_train, y_train,
+                  batch_size=batch_size,
+                  epochs=epochs,
+                  validation_data=(x_test, y_test),
+                  shuffle=True, verbose=2)
+except KeyboardInterrupt:
+    print("\nTraining interrupted. Saving model...")
+    model.save(model_save)
+    print("Model saved.")
 
-# save the model to disk
+# save the model to disk if training completes
 print("[INFO] saving model file...")
 model.save(model_save)
 
