@@ -56,7 +56,5 @@ class networkArchFonc:
         model.add(Dense(100, activation="relu"))
         model.add(Dense(1, activation='sigmoid'))  # Change this line to have one unit with 'sigmoid' activation
 
-        model.summary()
-
         # return the constructed network architecture
         return model
