@@ -26,7 +26,7 @@ Low dominance is associated with feelings of submission and powerlessness.
 
 # import the necessary packages
 from tensorflow.keras.models import Sequential # type:ignore
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Activation, Flatten, Dense, Reshape, LSTM # type:ignore
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Activation, Flatten, Dense, Input, Reshape, LSTM # type:ignore
 from tensorflow.keras import backend as K # type:ignore
 
 class networkArchFonc:
@@ -40,7 +40,10 @@ class networkArchFonc:
         if K.image_data_format() == "channels_first":
             inputShape = (depth, height, width)
 
-        model.add(Conv2D(filters=32, kernel_size=5, padding="same", activation="relu", input_shape=inputShape))
+        # Add an Input layer
+        model.add(Input(shape=inputShape))
+
+        model.add(Conv2D(filters=32, kernel_size=5, padding="same", activation="relu"))
         model.add(MaxPooling2D(pool_size=2, strides=2, padding="same"))
         model.add(Conv2D(filters=64, kernel_size=5, padding="same", activation="relu"))
         model.add(MaxPooling2D(pool_size=2, strides=2, padding="same"))
