@@ -1,36 +1,37 @@
 from __future__ import print_function
-import pandas as pd
-import numpy as np
-import scipy.stats as scs
-import re
-import natsort
-from imutils import paths
-from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, f1_score, precision_score, recall_score, balanced_accuracy_score, precision_recall_curve, matthews_corrcoef, roc_curve, jaccard_score, hamming_loss, fbeta_score, precision_recall_fscore_support, zero_one_loss, average_precision_score, cohen_kappa_score, roc_auc_score, mean_squared_error, auc
-from numpy import savetxt, genfromtxt
-import csv
-import matplotlib.pyplot as plt
-import argparse
-import random
-import cv2
 import os
-import scikitplot as skplt
-import seaborn as sns
+import re
+import csv
 import time
-from functools import reduce
+import glob
 import math as m
+import random
+import argparse
+import numpy as np
+import pandas as pd
 import scipy.io
+import seaborn as sns
+import matplotlib.pyplot as plt
+import natsort
+from functools import reduce
+from imutils import paths
+from numpy import savetxt, genfromtxt
+from scipy import stats as scs
 from scipy.interpolate import griddata
+from sklearn.metrics import (
+    confusion_matrix, classification_report, accuracy_score, f1_score, 
+    precision_score, recall_score, balanced_accuracy_score, precision_recall_curve, 
+    matthews_corrcoef, roc_curve, jaccard_score, hamming_loss, fbeta_score, 
+    precision_recall_fscore_support, zero_one_loss, average_precision_score, 
+    cohen_kappa_score, roc_auc_score, mean_squared_error, auc
+)
 from sklearn.preprocessing import scale, MinMaxScaler
 from sklearn.model_selection import train_test_split
-
-from tensorflow.keras.optimizers import Adam # type: ignore
-from tensorflow.keras.utils import to_categorical, plot_model # type: ignore
-from tensorflow.keras.preprocessing.image import img_to_array # type: ignore
-
+from tensorflow.keras.optimizers import Adam  # type: ignore
+from tensorflow.keras.utils import to_categorical, plot_model  # type: ignore
+from tensorflow.keras.preprocessing.image import img_to_array  # type: ignore
 from model_1 import networkArchFonc as networkArchFonc1
 from model_2 import networkArchFonc as networkArchFonc2
-
-import glob  
 from inspect import signature
 
 np.random.seed(1234)
