@@ -30,6 +30,7 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.optimizers import Adam  # type: ignore
 from tensorflow.keras.utils import to_categorical, plot_model  # type: ignore
 from tensorflow.keras.preprocessing.image import img_to_array  # type: ignore
+from tensorflow.keras.callbacks import EarlyStopping # type:ignore
 from model_1 import networkArchFonc as networkArchFonc1
 from model_2 import networkArchFonc as networkArchFonc2
 from inspect import signature
@@ -388,13 +389,15 @@ elif args.model == 2:
 # Initialize H
 H = None
 
+early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+
 # Training the model
 try:
     H = model.fit(x_train, y_train,
                   batch_size=batch_size,
                   epochs=epochs,
                   validation_data=(x_test, y_test),
-                  shuffle=True, verbose=2)
+                  shuffle=True, verbose=2, callbacks=[early_stopping])
 except KeyboardInterrupt:
     print("\nTraining interrupted. Saving model...")
     model.save(model_save)
@@ -422,177 +425,82 @@ if H is not None:
     plt.cla()
     plt.clf()
 
-# Plot Confusion Matrix
-Y_pred = model.predict(x_test)
-y_pred = np.argmax(Y_pred, axis=1)
-y_true = np.argmax(y_test, axis=1)
-etiket = ["UNLIKE", "LIKE", ]  # LOW HIGH
-
-# Check if y_true has only one unique label
-if len(set(y_true)) == 1:
-    etiket = [etiket[0]]
-    confusion_mtx = confusion_matrix(y_true, y_pred, labels=[0])
-else:
-    confusion_mtx = confusion_matrix(y_true, y_pred)
-
-# plot the confusion matrix
-f, ax = plt.subplots(figsize=(8, 8))
-sns.heatmap(confusion_mtx, annot=True, fmt=".1f", linewidths=0.01, cmap="Blues", linecolor="gray", ax=ax)
-
-plt.xlabel("Predicted Label")
-plt.ylabel("Actual Label")
-plt.title("Confusion Matrix")
-
-ax.set_xticklabels(etiket)
-ax.set_yticklabels(etiket)
-plt.savefig(test_sonuc2, dpi=500)
-print(H.history.keys())
-print(confusion_mtx)
-
-
-
-def cm_analysis(y_true, y_pred, filename, etikets, ymap=None, figsize=(10, 10)):
-    """
-    Generate matrix plot of confusion matrix with pretty annotations.
-    The plot image is saved to disk.
-    args:
-      y_true:    true label of the data, with shape (nsamples,)
-      y_pred:    prediction of the data, with shape (nsamples,)
-      filename:  filename of figure file to save
-      labels:    string array, name the order of class labels in the confusion matrix.
-                 use `clf.classes_` if using scikit-learn models.
-                 with shape (nclass,).
-      ymap:      dict: any -> string, length == nclass.
-                 if not None, map the labels & ys to more understandable strings.
-                 Caution: original y_true, y_pred and labels must align.
-      figsize:   the size of the figure plotted.
-    """
-    if ymap is not None:
-        y_pred = [ymap[yi] for yi in y_pred]
-        y_true = [ymap[yi] for yi in y_true]
-        labels = [ymap[yi] for yi in etikets]
+# New confusion matrix plotting function
+def plot_confusion_matrix(y_true, y_pred, labels, filename):
     cm = confusion_matrix(y_true, y_pred)
-    cm_sum = np.sum(cm, axis=1, keepdims=True)
-    cm_perc = cm / cm_sum.astype(float) * 100
-    annot = np.empty_like(cm).astype(str)
-    nrows, ncols = cm.shape
-    for i in range(nrows):
-        for j in range(ncols):
-            c = cm[i, j]
-            p = cm_perc[i, j]
-            if i == j:
-                s = cm_sum[i]
-                annot[i, j] = '%.1f%%\n%d/%d' % (p, c, s)
-            elif c == 0:
-                annot[i, j] = ''
-            else:
-                annot[i, j] = '%.1f%%\n%d' % (p, c)
-    cm = pd.DataFrame(cm, index=etikets, columns=etikets)
-    cm.index.name = 'Actual'
-    cm.columns.name = 'Predicted'
+    fig, ax = plt.subplots(figsize=(8, 8))
+    sns.heatmap(cm, annot=True, fmt="d", linewidths=0.01, cmap="Blues", linecolor="gray", ax=ax)
+    plt.xlabel("Predicted Label")
+    plt.ylabel("Actual Label")
     plt.title("Confusion Matrix")
-
-    fig, ax = plt.subplots(figsize=figsize)
-    sns.heatmap(cm, annot=annot, fmt='', ax=ax, cmap=sns.cm.rocket_r)
-    plt.title("Confusion Matrix")
+    ax.set_xticklabels(labels)
+    ax.set_yticklabels(labels)
     plt.savefig(filename, dpi=500)
 
+# Define class labels
+etiket = ["UNLIKE", "LIKE"]
 
-plt.cla()
-plt.clf()
+# Use the function to plot the confusion matrix based on the model type
+if args.model == 1:
+    plot_confusion_matrix(np.argmax(y_test, axis=1), np.argmax(model.predict(x_test), axis=1), etiket, test_sonuc2)
+elif args.model == 2:
+    plot_confusion_matrix(y_test.reshape(-1), (model.predict(x_test) > 0.5).astype("int32").reshape(-1), etiket, test_sonuc2)
+
+print(H.history.keys())
 
 # predict probabilities for test set
 yhat_probs = model.predict(x_test, verbose=0)
 yhat_probs = yhat_probs[:, 0]
 
-##############################################
+# calculate true and predicted values
+if args.model == 1:
+    y_pred = np.argmax(model.predict(x_test), axis=1)
+    y_true = np.argmax(y_test, axis=1)
+else:
+    y_pred = (yhat_probs > 0.5).astype("int32")
+    y_true = y_test.reshape(-1)
 
-# accuracy: (tp + tn) / (p + n)
-accuracy = accuracy_score(y_true, y_pred)
-print('Accuracy: %f' % accuracy)
-# precision tp / (tp + fp)
-precision = precision_score(y_true, y_pred)
-print('Precision: %f' % precision)
-# recall: tp / (tp + fn)
-recall = recall_score(y_true, y_pred)
-print('Recall: %f' % recall)
-# f1: 2 tp / (2 tp + fp + fn)
-f1 = f1_score(y_true, y_pred)
-print('F1 score: %f' % f1)
-# kappa
-kappa = cohen_kappa_score(y_true, y_pred)
-print('Cohens kappa: %f' % kappa)
+# Accuracy and other metrics
+print('Accuracy: %f' % accuracy_score(y_true, y_pred))
+print('Precision: %f' % precision_score(y_true, y_pred, zero_division=1))
+print('Recall: %f' % recall_score(y_true, y_pred))
+print('F1 score: %f' % f1_score(y_true, y_pred))
+print('Cohens kappa: %f' % cohen_kappa_score(y_true, y_pred))
+print('Balanced Accuracy: %f' % balanced_accuracy_score(y_true, y_pred))
+print('average_precision_score: %f' % average_precision_score(y_true, yhat_probs))
+print('matthews_corrcoef: %f' % matthews_corrcoef(y_true, y_pred))
+print('fbeta_score: %f' % fbeta_score(y_true, y_pred, beta=0.5))
+print('hamming_loss: %f' % hamming_loss(y_true, y_pred))
+print('jaccard_score: %f' % jaccard_score(y_true, y_pred))
 
-###########
-
-bas = balanced_accuracy_score(y_true, y_pred)
-print('Balanced Accuracy: %f' % bas)
-
-aps = average_precision_score(y_true, yhat_probs)
-print('average_precision_score: %f' % aps)
-
-mc = matthews_corrcoef(y_true, y_pred)
-print('matthews_corrcoef: %f' % mc)
-
-fbs = fbeta_score(y_true, y_pred, beta=0.5)
-print('fbeta_score: %f' % fbs)
-
-hl = hamming_loss(y_true, y_pred)
-print('hamming_loss: %f' % hl)
-
-js = jaccard_score(y_true, y_pred)
-print('jaccard_score: %f' % js)
-# log_loss(y_true, y_pred[, eps, normalize, …])
-
-prfs = precision_recall_fscore_support(y_true, y_pred, average='weighted')
+prfs = precision_recall_fscore_support(y_true, y_pred, average='weighted', zero_division=1)
 print('precision_recall_fscore_support:')
 print(prfs)
 
-zol = zero_one_loss(y_true, y_pred)
-print('zero_one_loss: %f' % zol)
+print('zero_one_loss: %f' % zero_one_loss(y_true, y_pred))
+print('mean_squared_error: %f' % mean_squared_error(y_true, y_pred))
 
-mse = mean_squared_error(y_true, y_pred)
-print('mean_squared_error: %f' % mse)
-
-print(classification_report(y_true, y_pred, target_names=etiket))
-##############################################
+print(classification_report(y_true, y_pred, target_names=etiket, zero_division=1))
 
 # P-R Grafik
-############################################
-precision, recall, thresholds = precision_recall_curve(y_true, yhat_probs, pos_label=0)
-# print('Precision_recall_curve: %f' % prc)
+precision, recall, thresholds = precision_recall_curve(y_true, yhat_probs)
 plt.cla()
 plt.clf()
-# In matplotlib < 1.5, plt.fill_between does not have a 'step' argument
-step_kwargs = ({'step': 'post'}
-               if 'step' in signature(plt.fill_between).parameters
-               else {})
-plt.step(recall, precision, color='b', alpha=0.2,
-         where='post')
-plt.fill_between(recall, precision, alpha=0.2, color='b', **step_kwargs)
-
+plt.step(recall, precision, color='b', alpha=0.2, where='post')
+plt.fill_between(recall, precision, alpha=0.2, color='b', step='post')
 plt.xlabel('Recall')
 plt.ylabel('Precision')
 plt.ylim([-0.01, 1.01])
 plt.xlim([-0.01, 1.01])
-plt.title('2-class Precision-Recall curve: AP={0:0.2f}'.format(aps))
+plt.title('2-class Precision-Recall curve: AP={0:0.2f}'.format(average_precision_score(y_true, yhat_probs)))
 plt.savefig(PR, dpi=500)
-##############################################
 
-
-##############################################
-# Plot the roc curve
-fpr, tpr, thresholds = roc_curve(y_true, yhat_probs, pos_label=0)
-auc = auc(fpr, tpr)
-# ROC AUC
-# auc = roc_auc_score(y_true, yhat_probs,pos_label=0)
-print('ROC AUC: %f' % auc)
-
+# Plot the ROC curve
+fpr, tpr, thresholds = roc_curve(y_true, yhat_probs)
 plt.cla()
 plt.clf()
-# Plot ROC curve
-plt.plot(fpr, tpr, label='ROC curve (area = %0.3f)' % auc)
-plt.plot([0, 1], [0, 1], 'k--')  # random predictions curve
+plt.plot(fpr, tpr, label='ROC curve (area = %0.3f)' % auc(fpr, tpr))
+plt.plot([0, 1], [0, 1], 'k--')
 plt.xlim([-0.01, 1.01])
 plt.ylim([-0.01, 1.01])
 plt.xlabel('False Positive Rate or (1 - Specifity)')
@@ -600,5 +508,5 @@ plt.ylabel('True Positive Rate or (Sensitivity)')
 plt.title('Receiver Operating Characteristic')
 plt.legend(loc="lower right")
 plt.savefig(roc, dpi=500)
-##############################################
+
 model.summary()
