@@ -378,7 +378,16 @@ x_test = x_test.astype('float32')
 x_train /= 255
 x_test /= 255
 
-# Save the model if interrupted
+# Set number of epochs based on model type
+if args.model == 1:
+    epochs = 400  # Model 1 requires the initially chosen 400 epochs
+elif args.model == 2:
+    epochs = 20   # Model 2 requires fewer epochs as it takes forever to train, initial training shows converging accuracy and loss function metrics.
+
+# Initialize H
+H = None
+
+# Training the model
 try:
     H = model.fit(x_train, y_train,
                   batch_size=batch_size,
@@ -390,36 +399,41 @@ except KeyboardInterrupt:
     model.save(model_save)
     print("Model saved.")
 
-# save the model to disk if training completes
+# Save the model to disk if training completes
 print("[INFO] saving model file...")
 model.save(model_save)
 
-# plot the training loss and accuracy
-plt.style.use("ggplot")
-plt.figure()
-N = epochs
-plt.plot(np.arange(0, N), H.history["loss"], label="training_loss")
-plt.plot(np.arange(0, N), H.history["val_loss"], label="val_loss")
-plt.plot(np.arange(0, N), H.history["accuracy"], label="training_acc")
-plt.plot(np.arange(0, N), H.history["val_accuracy"], label="val_acc")
-plt.title("Performance Metrics of Valence Emotion State")
-plt.xlabel("Epoch #")
-plt.ylabel("Loss/Accuracy")
-plt.legend(loc="best", bbox_to_anchor=(0.5, 0., 0.5, 0.5))
-plt.savefig(test_sonuc, dpi=500)
+# Plot the training loss and accuracy if H is defined
+if H is not None:
+    plt.style.use("ggplot")
+    plt.figure()
+    N = len(H.history["loss"])
+    plt.plot(np.arange(0, N), H.history["loss"], label="training_loss")
+    plt.plot(np.arange(0, N), H.history["val_loss"], label="val_loss")
+    plt.plot(np.arange(0, N), H.history["accuracy"], label="training_acc")
+    plt.plot(np.arange(0, N), H.history["val_accuracy"], label="val_acc")
+    plt.title("Performance Metrics of Valence Emotion State")
+    plt.xlabel("Epoch #")
+    plt.ylabel("Loss/Accuracy")
+    plt.legend(loc="best", bbox_to_anchor=(0.5, 0., 0.5, 0.5))
+    plt.savefig(test_sonuc, dpi=500)
 
-
-plt.cla()
-plt.clf()
+    plt.cla()
+    plt.clf()
 
 # Plot Confusion Matrix
-# ben bunu trainle  denicem. TesX testY yerine trainX trainY yaz
 Y_pred = model.predict(x_test)
 y_pred = np.argmax(Y_pred, axis=1)
 y_true = np.argmax(y_test, axis=1)
 etiket = ["UNLIKE", "LIKE", ]  # LOW HIGH
 
-confusion_mtx = confusion_matrix(y_true, y_pred)
+# Check if y_true has only one unique label
+if len(set(y_true)) == 1:
+    etiket = [etiket[0]]
+    confusion_mtx = confusion_matrix(y_true, y_pred, labels=[0])
+else:
+    confusion_mtx = confusion_matrix(y_true, y_pred)
+
 # plot the confusion matrix
 f, ax = plt.subplots(figsize=(8, 8))
 sns.heatmap(confusion_mtx, annot=True, fmt=".1f", linewidths=0.01, cmap="Blues", linecolor="gray", ax=ax)

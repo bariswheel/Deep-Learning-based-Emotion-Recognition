@@ -13,7 +13,7 @@ images and perform classification.
 # import the necessary packages
 
 from tensorflow.keras.models import Sequential # type: ignore
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Activation, Flatten, Dense # type: ignore
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Activation, Flatten, Dense, Input # type: ignore
 from tensorflow.keras import backend as K # type: ignore
 
 
@@ -21,7 +21,7 @@ class networkArchFonc:
     # Method below belongs to the class rather than instance of the class
     # Method's functionality is independent of any instance-specific data
     # As this is a utility method that performs a task in isolation. This
-    # is the true for the other model 
+    # is true for the other model as well.
 
     @staticmethod
     def build(width, height, depth, classes):
@@ -33,16 +33,18 @@ class networkArchFonc:
         if K.image_data_format() == "channels_first":
             inputShape = (depth, height, width)
 
+        # Add an Input layer
+        model.add(Input(shape=inputShape))
+
         # first set of CONV => RELU => POOL layers
-        model.add(Conv2D(16, (2, 2), padding="same",
-                         input_shape=inputShape))
+        model.add(Conv2D(16, (2, 2), padding="same"))
         model.add(Activation("relu"))
         model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
 
         # second set of CONV => RELU => POOL layers
         # RELU: Rectified Linear Unit
-        model.add(Conv2D(32, (2, 2), padding="same"))  # kernelere göre conv yerni bir matris oluşturma
-        model.add(Activation("relu"))  # reulu: negatif değerleri çevirme relu sıfıra elu e üzeri
+        model.add(Conv2D(32, (2, 2), padding="same"))  # kernellere göre conv yeni bir matris oluşturma
+        model.add(Activation("relu"))  # relu: negatif değerleri çevirme relu sıfıra elu e üzeri
         model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
 
         # first (and only) set of FC => RELU layers
