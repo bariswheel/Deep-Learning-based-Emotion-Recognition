@@ -483,7 +483,7 @@ print('mean_squared_error: %f' % mean_squared_error(y_true, y_pred))
 
 print(classification_report(y_true, y_pred, target_names=etiket, zero_division=1))
 
-# P-R Grafik
+# Plot the Precision Recall Graph
 precision, recall, thresholds = precision_recall_curve(y_true, yhat_probs)
 plt.cla()
 plt.clf()
@@ -496,7 +496,11 @@ plt.xlim([-0.01, 1.01])
 plt.title('2-class Precision-Recall curve: AP={0:0.2f}'.format(average_precision_score(y_true, yhat_probs)))
 plt.savefig(PR, dpi=500)
 
-# Plot the ROC curve
+# Plot the ROC (Receiver Operationg Characteristic) curve
+'''
+The ROC curve is the plot of the true positive rate against the false positive rate at each threshold setting.
+If the curve is close to the diagonal line, it indicates that the model is not performing better than random chance.
+The more the curve bows towards the top-left corner, the better the classifier is performing'''
 fpr, tpr, thresholds = roc_curve(y_true, yhat_probs)
 plt.cla()
 plt.clf()
