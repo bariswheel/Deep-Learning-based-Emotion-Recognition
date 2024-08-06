@@ -35,9 +35,9 @@ from model_1 import networkArchFonc as networkArchFonc1
 from model_2 import networkArchFonc as networkArchFonc2
 from inspect import signature
 
-np.random.seed(1234)
+np.random.seed(1234)    # Set random seed for reproducibility
 
-pd.options.display.max_columns = None
+pd.options.display.max_columns = None   # Configure pandas display options
 pd.options.display.precision = 4
 
 # Function to determine the next available model number
@@ -46,7 +46,7 @@ def get_next_model_number(directory):
     numbers = [int(os.path.basename(f)[1:]) for f in files if os.path.basename(f)[1:].isdigit()]
     return max(numbers) + 1 if numbers else 1
 
-# Define directories
+# Define directories for saving models and results
 model_directory = 'modeller'
 results_directory = 'sonuclar'
 
@@ -54,7 +54,7 @@ results_directory = 'sonuclar'
 next_model_number = get_next_model_number(model_directory)
 sira = str(next_model_number)
 
-# Update the save paths
+# Update the save paths for the model and results
 model_save = f'{model_directory}/m{sira}.keras'
 test_sonuc = f'{results_directory}/sonuc{sira}'
 test_sonuc2 = f'{results_directory}/confusion{sira}'
@@ -66,7 +66,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--model', type=int, default=1, help='Select the model: 1 or 2')
 args = parser.parse_args()
 
-if args.model == 1:
+if args.model == 1:     # Choose the appropriate model based on the argument
     networkArchFonc = networkArchFonc1
 elif args.model == 2:
     networkArchFonc = networkArchFonc2
@@ -74,19 +74,19 @@ else:
     raise ValueError("Invalid model selection. Choose 1 or 2.")
 
 
-# Calculations portions of the script below
+# Set hyperparameters and dataset information
 
-resim_boyut = 16
-dataset = 'relabeled_data'
-etiket = 'labels/dominance.csv'
-frame_duration = 15
-overlap = 0  # degisecek
-batch_size = 64
-num_classes = 2
-epochs = 400
+resim_boyut = 16    # Image size
+dataset = 'relabeled_data'  #Dataset Directory
+etiket = 'labels/dominance.csv' # Label file
+frame_duration = 15 # Duration of each frame in seconds
+overlap = 0  # Overlap between frames, this will change
+batch_size = 64 # Batch size for training
+num_classes = 2 # Number of classes for classification
+epochs = 400 # Hardcoded number of training epochs, this is hardcoded but changes depending on 'patience' score
 
 
-def fft(snippet):
+def fft(snippet):   # Function to perform Fast Fourier Transform (FFT) on EEG data
     '''
     The fft function performs a Fast Fourier Transform (FFT) on a snippet of 
     time-domain data to convert it into the frequency domain.
@@ -139,7 +139,7 @@ def fft(snippet):
     return frq, Y
     # The function returns the frequency values (frq) and the corresponding normalized amplitude values (Y).
 
-def gamma_alpha_beta_averages(f, Y):
+def gamma_alpha_beta_averages(f, Y):  # Function to calculate gamma, alpha, and beta averages from FFT results
     gamma_range = (30, 45)
     alpha_range = (8, 13)
     beta_range = (14, 30)
@@ -149,8 +149,9 @@ def gamma_alpha_beta_averages(f, Y):
 
     return gamma, alpha, beta
 
+# Functions for coordinate system conversions
 
-def cart2sph(x, y, z):
+def cart2sph(x, y, z):  # (Cartesian to spherical coordinate conversion)
     x2_y2 = x ** 2 + y ** 2
     r = m.sqrt(x2_y2 + z ** 2)  # r
     elev = m.atan2(z, m.sqrt(x2_y2))  # Elevation
@@ -158,11 +159,11 @@ def cart2sph(x, y, z):
     return r, elev, az
 
 
-def pol2cart(theta, rho):
+def pol2cart(theta, rho): # (Polar to Cartesian coordinate conversion)
     return rho * m.cos(theta), rho * m.sin(theta)
 
 
-def steps_m(samples, frame_duration, overlap):
+def steps_m(samples, frame_duration, overlap):  # (Frame interval calculation)
     Fs = 128
     i = 0
     intervals = []
@@ -173,7 +174,7 @@ def steps_m(samples, frame_duration, overlap):
     return intervals
 
 
-def aep_frame_maker(df, frame_duration):
+def aep_frame_maker(df, frame_duration):   # (Frame creation from EEG data)
     Fs = 128.0
     frame_length = Fs * frame_duration
     frames = []
@@ -280,10 +281,10 @@ def gen_images(locs, features, n_gridpoints, normalize=True,
     return np.swapaxes(np.asarray(temp_interp), 0, 1)  # swap axes to have [samples, colors, W, H]
 
 
-def data_marker(file_names, labels, image_size, frame_duration, overlap):
+def data_marker(file_names, labels, image_size, frame_duration, overlap):   ## Function to process EEG data and create labeled datasets
     Fs = 128.0  # sampling rate
     frame_length = Fs * frame_duration
-    # Baris - this is the first output that shows up when running the train_network.py
+    # This is the first output that shows up when running the train_network.py
     print('Generating training data...')
 
     for i, file in enumerate(file_names):
